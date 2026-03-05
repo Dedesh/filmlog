@@ -1,0 +1,121 @@
+<div id="header-placement">
+    <div id="header-container">
+
+        <a href="/">
+            <img id="logo" src="/images/filmlog-logo.png" alt="FilmLog logo">
+        </a>
+
+        <div class="nav-links">
+            <% if (!user) { %>
+
+                <button type="button" id="log-in-btn" onclick="toggleLogInPopUp(event)">LOG IN</button>
+
+                <button type="button" id="register-btn" onclick="toggleRegisterPopUp(event)">CREATE ACCOUNT</button>
+
+            <% } else { %>
+
+                <div class="dropdown-container">
+
+                    <button type="button" class="dropdown-menu-topic"><%= user.username.toUpperCase() %></button>
+
+                    <div class="dropdown-menu">
+                        <hr>
+                        <form action="/log-out" method="POST">
+                            <input type="hidden" name="currentUrl" value="<%= currentUrl %>">
+                            <button type="submit">Log Out</button>
+                        </form>
+                    </div>
+
+                </div>
+
+                <a href="">
+                    FILMS
+                </a>
+
+                <a href="">
+                    ACTORS
+                </a>
+
+                <a href="">
+                    FRIENDS
+                </a>
+
+            <% } %>
+        </div>
+
+        <form id="search-bar" action="/find" method="GET" onsubmit="handleSearch(event)">
+
+            <input type="text" name="searchText" required pattern=".*\S.*" placeholder="FIND A FILM"
+                <% if (locals.searchText) { %>
+                    value="<%= searchText %>">
+                <% } else { %>
+                    >
+                <% } %>
+
+            <button type="submit">
+                <img src="/images/search.png" alt="Search icon">
+            </button>
+
+        </form>
+
+        <script src="/js/header.js"></script>
+
+    </div>
+</div>
+
+<!-- Creates the hidden pop-ups to register and log in if the user is not logged in -->
+<% if (!user) { %>
+
+    <div id="log-in-pop-up" class="pop-up-centralizer hidden">
+        <div class="pop-up">
+            
+            <div class="title-and-close-btn">
+                <p class="title">LOG IN TO FILMLOG</p>
+                <img class="close-btn" src="/images/close.png" alt="Close button" onmouseup="toggleLogInPopUp(event)">
+            </div>
+
+            <form action="/log-in" method="POST">
+                <div>
+                    <label for="email">Email address</label>
+                    <input type="text" name="email" required>
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="text" name="password" required>
+                </div>
+                <input type="hidden" name="currentUrl" value="<%= currentUrl %>">
+                <input type="submit" value="LOG IN">
+            </form>
+            
+        </div>
+    </div>
+
+    <div id="register-pop-up" class="pop-up-centralizer hidden">
+        <div class="pop-up">
+            
+            <div class="title-and-close-btn">
+                <p class="title">JOIN FILMLOG</p>
+                <img class="close-btn" src="/images/close.png" alt="Close button" onmouseup="toggleRegisterPopUp(event)">
+            </div>
+
+            <form action="/register" method="POST">
+                <div>
+                    <label for="email">Email address</label>
+                    <input type="text" name="email" required>
+                </div>
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="text" name="password" required>
+                </div>
+                <input type="hidden" name="currentUrl" value="<%= currentUrl %>">
+                <input type="submit" value="SIGN UP">
+            </form>
+            
+        </div>
+    </div>
+
+<% } %>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FilmLog - <%= filmData.title %> (<%= filmData.release_date.slice(0, 4) %>)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <%- include("../partials/header.ejs") %>
+
+    <div id="bg-container">
+        <div id="bg-img" style="--bg: url('https://image.tmdb.org/t/p/w1280<%= filmData.backdrop_path %>')"></div>
+    </div>
+
+    <div id="film-container">
+
+        <img id="film-poster"
+            src="https://image.tmdb.org/t/p/w500<%= filmData.poster_path %>"
+            alt="Poster of <%= filmData.title %>">
+
+        <div id="film-info">
+
+            <div id="film-header">
+                <h1><%= filmData.title %></h1>
+                <p><%= filmData.release_date.slice(0, 4) %></p>
+                <% const directors = filmData.credits?.crew?.filter(member => member.job === "Director").map(d => d.name) %>
+                <% if (directors) { %>
+                    <p>Directed by <%= directors.join(", ") %></p>
+                <% } %>
+            </div>
+
+            <div id="film-main">
+                
+                <div id="film-column">
+                    <p><%= filmData.overview %></p>
+                </div>
+
+                <div id="film-ratings">
+                    <p><%= filmData.vote_count %> Ratings</p>
+                    <hr>
+                    <p><%= filmData.vote_count != 0 ? filmData.vote_average.toFixed(1) : "No votes" %></p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="cast">
+        <% filmData.credits?.cast?.slice(0, 10).forEach(actor => { %>
+            <% if (actor.profile_path && actor.character) { %>
+                <div class="actor">
+                    <p><%= actor.name %></p>
+                    <img
+                        src="https://image.tmdb.org/t/p/w185<%= actor.profile_path %>" 
+                        alt="Photo <%= actor.name %>">
+                    <p><%= actor.character %></p>
+                </div>
+            <% }; %>
+        <% }); %>
+    </div>
+
+</body>
+</html>

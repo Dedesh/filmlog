@@ -1,0 +1,433 @@
+:root {
+    --bg-width: 1200px;
+    --bg-color: rgb(39, 39, 61);
+    --detail-color: rgb(121, 121, 121);
+    --dark-detail-color: rgb(95, 107, 119);
+    --light-detail-color: rgb(126, 142, 158);
+    --extra-light-detail-color: rgb(203, 218, 233);
+    --focus-color: rgb(181, 154, 255);
+    --green: rgb(0, 172, 28);
+    --dark-green: rgb(0, 161, 27);
+}
+
+a {
+    all: unset;
+    cursor: pointer;
+}
+
+* {
+    font-family: "Montserrat", sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        linear-gradient(to bottom, var(--bg-color) 30%, rgb(23, 23, 36));
+}
+
+#header-placement {
+    display: flex;
+    justify-content: center;
+}
+
+#header-placement p {
+    color: white;
+}
+
+#header-container {
+    position: absolute;
+    padding-top: 1.25rem;
+    width: calc(0.7 * var(--bg-width));
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+#header-background {
+    position: absolute;
+    width: 100%;
+    height: 5.25rem;
+    background-color: rgb(24, 24, 37);
+}
+
+#logo {
+    height: 2.5rem;
+}
+
+.nav-links {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links button,
+.nav-links a {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.nav-links button[onclick]:hover,
+.nav-links a:hover {
+    color: var(--focus-color);
+}
+
+.dropdown-menu-topic {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    border-radius: 0 0 0.25rem 0.25rem;
+    overflow: hidden;
+}
+
+.dropdown-menu button {
+    color: var(--bg-color);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.dropdown-menu hr {
+    margin: 0 0 0.4rem 0;
+}
+
+.dropdown-container:hover .dropdown-menu {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.dropdown-container button {
+    width: 8rem;
+    padding: 0.5rem 0;
+}
+
+.dropdown-container:hover,
+.dropdown-menu {
+    background-color: var(--light-detail-color);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.dropdown-menu button:hover {
+    background-color: rgb(93, 104, 116);
+}
+
+.dropdown-container {
+    position: relative;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+#search-bar {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    background-color: rgba(255, 255, 255);
+    border: none;
+    border-radius: 1rem;
+    padding: 0.25rem;
+    font-weight: 500;
+    transition: all ease 0.3s;
+}
+#search-bar:hover,
+#search-bar:focus-within {
+    transform: scale(1.05);
+}
+
+#search-bar input {
+    all: unset;
+    cursor: text;
+    padding: 0 0.25rem;
+    width: 8rem;
+}
+
+#search-bar button {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0 0.25rem;
+}
+
+#search-bar img {
+    height: 1rem;
+    filter: invert(0.5);
+}
+
+.pop-up-centralizer {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.pop-up {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 2rem;
+    padding: 2.5rem;
+    color: white;
+    background-color: var(--dark-detail-color);
+    border-radius: 0.3rem;
+}
+
+.pop-up form {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1.5rem;
+}
+
+.pop-up form div {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.5rem;
+}
+
+.pop-up .title-and-close-btn {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pop-up .title {
+    color: var(--extra-light-detail-color);
+}
+
+.pop-up .close-btn {
+    height: 1.2rem;
+    width: 1.2rem;
+    cursor: pointer;
+    filter: invert(1) opacity(0.30);
+}
+.pop-up .close-btn:hover {
+    filter: invert(1) opacity(0.85);
+}
+
+.pop-up label {
+    font-size: 0.8rem;
+}
+
+.pop-up input[type="text"] {
+    all: unset;
+    cursor: text;
+    color: var(--dark-detail-color);
+    background-color: var(--extra-light-detail-color);
+    border-radius: 0.15rem;
+    padding: 0.5rem;
+    width: 20rem;
+}
+.pop-up input[name="username"],
+.pop-up input[name="password"] {
+    width: 12rem;
+}
+.pop-up input[type="text"]:focus {
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.pop-up input[type="submit"] {
+    all: unset;
+    cursor: pointer;
+    color: white;
+    background-color: var(--green);
+    border-radius: 0.15rem;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    width: fit-content;
+}
+.pop-up input[type="submit"]:hover {
+    background-color: var(--dark-green);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+}
+
+#find-film-body {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+#find-film-content {
+    width: calc(0.7 * var(--bg-width));
+    padding: 8.5rem 0;
+}
+
+#search-text {
+    text-transform: uppercase;
+}
+
+.find-film-card {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1rem;
+    margin: 1.25rem 0;
+}
+
+.find-film-poster,
+.find-film-title {
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    text-align: left;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+.find-film-title:hover {
+    color: var(--focus-color);
+}
+
+.find-film-year {
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+.find-film-poster {
+    align-self: flex-start;
+}
+
+.find-film-poster img {
+    height: 8.5rem;
+    width: 5.7rem;
+    border: 1px solid var(--detail-color);
+    border-radius: 0.3rem;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+.find-film-poster img:hover {
+    transform: scale(1.05);
+    border: 1px solid var(--focus-color);
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+}
+
+.find-film-info {
+    align-self: flex-start;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.more-text {
+    color: white;
+    cursor: pointer;
+}
+.more-text:hover {
+    color: var(--focus-color);
+}
+
+#bg-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#bg-img {
+    position: absolute;
+    z-index: -1;
+
+    width: var(--bg-width);
+    aspect-ratio: 16 / 6.6;
+
+    background:
+        linear-gradient(to right, transparent 80%, var(--bg-color)),
+        linear-gradient(to left, transparent 80%, var(--bg-color)),
+        linear-gradient(to bottom, transparent 80%, var(--bg-color)),
+        linear-gradient(to right, transparent 85%, var(--bg-color)),
+        linear-gradient(to left, transparent 85%, var(--bg-color)),
+        linear-gradient(to bottom, transparent 85%, var(--bg-color)),
+        linear-gradient(to top, transparent 70%, var(--bg-color) 110%),
+        var(--bg);
+
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+#film-container {
+    padding-top: calc((var(--bg-width) / 16) * 6);
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    gap: 3rem;
+}
+
+#film-poster {
+    height: 40vh;
+    width: 27vh;
+    border: 1px solid var(--detail-color);
+    border-radius: 0.5rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.904);
+}
+
+#film-info {
+    display: flex;
+    flex-flow: column;
+    gap: 2rem;
+}
+
+#film-header {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.5rem 1.5rem;
+    align-items: baseline;
+    width: calc( 0.5 * var(--bg-width));
+}
+
+#film-main {
+    display: flex;
+    flex-flow: row;
+    gap: 3rem;
+}
+
+#film-column {
+    display: flex;
+    flex-flow: column;
+    width: calc( 0.30 * var(--bg-width));
+}
+
+#film-ratings {
+    flex: 1;
+}
+
+#film-ratings p {
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: var(--detail-color);
+}
+
+h1 {
+    margin: 0;
+    color: white;
+}
+
+p {
+    margin: 0;
+    color: rgb(178, 174, 190);
+}
