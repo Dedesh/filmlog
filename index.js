@@ -5,13 +5,11 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import axios from "axios";
 import bcrypt from "bcrypt";
-import validator from "validator";
 import crypto from "crypto";
 import { registerLimiter } from "./middlewares/rate-limiters.js";
 import { sendVerificationEmail } from "./services/email-service.js";
 import jwt from "jsonwebtoken";
 import { authenticateUser } from "./middlewares/auth.js";
-import { validateCurrentUrl } from "./utils/validateCurrentUrl.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,15 +18,10 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 
 app.use(authenticateUser);
-
-// Middleware to track the current URL
-app.use((req, res, next) => {
-    res.locals.currentUrl = req.originalUrl;
-    next();
-});
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const ACCESS_TOKEN = process.env.TMDB_TOKEN;
@@ -98,28 +91,25 @@ app.get("/film/:id", async (req, res) => {
 
 app.post("/register", registerLimiter, async (req, res) => {
 
-    const currentUrl = validateCurrentUrl(req.body.currentUrl || "/");
-
     const email = req.body.email.toLowerCase();
     const username = req.body.username;
     const password = req.body.password;
-
-    if (!validator.isEmail(email)) {
-        return res.status(400).send("Invalid email.")
-    };
     
     try {
 
-        const isRegistered = await db.query("SELECT is_verified FROM users WHERE email = $1", [email]);
+        const isEmailTaken = await db.query("SELECT email FROM users WHERE email = $1 AND is_verified = true", [email]);
+        const isUsernameTaken = await db.query("SELECT username FROM users WHERE username ILIKE $1 AND is_verified = true", [username]);
 
-        if (isRegistered.rows.length > 0) {
-
-            if (isRegistered.rows[0].is_verified === true) { // Account already exists and is verified
-                return res.status(400).send("This email is already registered.");
-            } else {                                         // Account already exists but is not verified, so it will be deleted before registering a new one
-                await db.query("DELETE FROM users WHERE email = $1", [email]);
-            };
-            
+        if (isEmailTaken.rows.length > 0) {
+            return res.status(409).json({ error: "This email is already registered." });  
+        } else if (isUsernameTaken.rows.length > 0) {
+            return res.status(409).json({ error: "This username is already in use." });
+        } else {
+            await db.query(
+                `DELETE FROM users
+                WHERE (email = $1 OR username = $2)
+                AND is_verified = false`,
+                [email, username]); // Deletes unverified users so the new user can register
         };
 
         const hashedPassword = await bcrypt.hash(password, 12);
@@ -135,15 +125,14 @@ app.post("/register", registerLimiter, async (req, res) => {
 
         await sendVerificationEmail(email, username, verifyLink);
 
-        return res.render("pages/message", {
-            message: "Account created successfully, verify your email before logging in."
+        return res.status(201).json({
+            success: true,
+            message: "Account created successfully, verify your email before logging in.",
         });
 
     } catch (err) {
         console.error(err);        
-        return res.render("pages/message", {
-            message: "Internal server error."
-        });
+        return res.status(500).json({ error: "Internal server error." });
     };
 
 });
@@ -192,8 +181,6 @@ app.get("/verify", async (req, res) => {
 
 app.post("/log-in", async (req, res) => {
 
-    const currentUrl = validateCurrentUrl(req.body.currentUrl || "/");
-
     const email = req.body.email.toLowerCase();
     const password = req.body.password;
 
@@ -205,12 +192,11 @@ app.post("/log-in", async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.redirect(currentUrl);
-            return res.status(401).send("Email not registered.");
+            return res.status(401).json({ error: "Email not registered." });
         }
 
         if (result.rows[0].is_verified === false) {
-            return res.status(401).send("The account is not yet verified, check your email.");
+            return res.status(401).json({ error: "The account is not yet verified, check your email." });
         }
 
         const user = result.rows[0]
@@ -218,7 +204,7 @@ app.post("/log-in", async (req, res) => {
         const doesMatch = await bcrypt.compare(password, user.password);
 
         if (!doesMatch) {
-            return res.status(401).send("Password is not correct.");
+            return res.status(401).json({ error: "Password is not correct." });
         }
 
         const authToken = jwt.sign(
@@ -237,25 +223,31 @@ app.post("/log-in", async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        return res.redirect(currentUrl);
+        return res.json({ success: true });
 
     } catch (err) {
         console.error(err);
-        return res.render("pages/message", {
-            message: "Internal server error."
-        });
+        return res.status(500).json({ error: "Internal server error." });
     };
 
 });
 
 app.post("/log-out", (req, res) => {
-
-    const currentUrl = validateCurrentUrl(req.body.currentUrl || "/");
     
     res.clearCookie("authToken");
 
-    return res.redirect(currentUrl);
+    return res.sendStatus(204);
 
+});
+
+app.get("/message", (req, res) => {
+
+    const message = req.query.message;
+
+    res.render("pages/message", {
+        message
+    });
+    
 });
 
 app.listen(PORT, () => {

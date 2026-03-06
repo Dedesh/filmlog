@@ -8,9 +8,9 @@
         <div class="nav-links">
             <% if (!user) { %>
 
-                <button type="button" id="log-in-btn" onclick="toggleLogInPopUp(event)">LOG IN</button>
+                <button type="button" id="log-in-btn">LOG IN</button>
 
-                <button type="button" id="register-btn" onclick="toggleRegisterPopUp(event)">CREATE ACCOUNT</button>
+                <button type="button" id="register-btn">CREATE ACCOUNT</button>
 
             <% } else { %>
 
@@ -20,8 +20,7 @@
 
                     <div class="dropdown-menu">
                         <hr>
-                        <form action="/log-out" method="POST">
-                            <input type="hidden" name="currentUrl" value="<%= currentUrl %>">
+                        <form id="log-out-form">
                             <button type="submit">Log Out</button>
                         </form>
                     </div>
@@ -43,7 +42,7 @@
             <% } %>
         </div>
 
-        <form id="search-bar" action="/find" method="GET" onsubmit="handleSearch(event)">
+        <form id="search-bar">
 
             <input type="text" name="searchText" required pattern=".*\S.*" placeholder="FIND A FILM"
                 <% if (locals.searchText) { %>
@@ -58,8 +57,6 @@
 
         </form>
 
-        <script src="/js/header.js"></script>
-
     </div>
 </div>
 
@@ -71,19 +68,19 @@
             
             <div class="title-and-close-btn">
                 <p class="title">LOG IN TO FILMLOG</p>
-                <img class="close-btn" src="/images/close.png" alt="Close button" onmouseup="toggleLogInPopUp(event)">
+                <img id="log-in-close-btn" class="close-btn" src="/images/close.png" alt="Close button">
             </div>
 
-            <form action="/log-in" method="POST">
+            <form id="log-in-form">
                 <div>
                     <label for="email">Email address</label>
-                    <input type="text" name="email" required>
+                    <input type="text" name="email" id="email" required>
                 </div>
                 <div>
                     <label for="password">Password</label>
-                    <input type="text" name="password" required>
+                    <input type="password" name="password" id="password" required>
                 </div>
-                <input type="hidden" name="currentUrl" value="<%= currentUrl %>">
+                <p id="log-in-error" class="pop-up-error hidden"></p>
                 <input type="submit" value="LOG IN">
             </form>
             
@@ -95,23 +92,23 @@
             
             <div class="title-and-close-btn">
                 <p class="title">JOIN FILMLOG</p>
-                <img class="close-btn" src="/images/close.png" alt="Close button" onmouseup="toggleRegisterPopUp(event)">
+                <img id="register-close-btn" class="close-btn" src="/images/close.png" alt="Close button">
             </div>
 
-            <form action="/register" method="POST">
+            <form id="register-form">
                 <div>
                     <label for="email">Email address</label>
-                    <input type="text" name="email" required>
+                    <input type="text" name="email" id="email" required>
                 </div>
                 <div>
                     <label for="username">Username</label>
-                    <input type="text" name="username" required>
+                    <input type="text" name="username" id="username" required>
                 </div>
                 <div>
                     <label for="password">Password</label>
-                    <input type="text" name="password" required>
+                    <input type="password" name="password" id="password" required>
                 </div>
-                <input type="hidden" name="currentUrl" value="<%= currentUrl %>">
+                <p id="register-error" class="pop-up-error hidden"></p>
                 <input type="submit" value="SIGN UP">
             </form>
             
@@ -119,3 +116,5 @@
     </div>
 
 <% } %>
+
+<script src="/js/header.js" type="module"></script>

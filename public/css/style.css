@@ -8,6 +8,7 @@
     --focus-color: rgb(181, 154, 255);
     --green: rgb(0, 172, 28);
     --dark-green: rgb(0, 161, 27);
+    --red: rgb(255, 131, 141);
 }
 
 a {
@@ -216,11 +217,13 @@ body {
     filter: invert(1) opacity(0.85);
 }
 
-.pop-up label {
+.pop-up label,
+.pop-up-error {
     font-size: 0.8rem;
 }
 
-.pop-up input[type="text"] {
+.pop-up input[type="text"],
+.pop-up input[type="password"] {
     all: unset;
     cursor: text;
     color: var(--dark-detail-color);
@@ -233,7 +236,8 @@ body {
 .pop-up input[name="password"] {
     width: 12rem;
 }
-.pop-up input[type="text"]:focus {
+.pop-up input[type="text"]:focus,
+.pop-up input[type="password"]:focus {
     background-color: white;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
@@ -253,6 +257,11 @@ body {
 .pop-up input[type="submit"]:hover {
     background-color: var(--dark-green);
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+}
+
+.pop-up-error {
+    margin-bottom: -2rem;
+    color: var(--red);
 }
 
 #find-film-body {

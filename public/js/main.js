@@ -15,6 +15,3 @@ moreTextButtons.forEach((btn) => {
         
     });
 });
-
-// Log in fetch
-const logInForm = document.querySelector("")
