@@ -8,9 +8,9 @@
         <div class="nav-links">
             <% if (!user) { %>
 
-                <button type="button" id="log-in-btn">LOG IN</button>
+                <button type="button" id="open-log-in-btn">LOG IN</button>
 
-                <button type="button" id="register-btn">CREATE ACCOUNT</button>
+                <button type="button" id="open-register-btn">CREATE ACCOUNT</button>
 
             <% } else { %>
 
@@ -81,7 +81,7 @@
                     <input type="password" name="password" id="password" required>
                 </div>
                 <p id="log-in-error" class="pop-up-error hidden"></p>
-                <input type="submit" value="LOG IN">
+                <input id="log-in-submit-btn" type="submit" value="LOG IN">
             </form>
             
         </div>
@@ -109,7 +109,7 @@
                     <input type="password" name="password" id="password" required>
                 </div>
                 <p id="register-error" class="pop-up-error hidden"></p>
-                <input type="submit" value="SIGN UP">
+                <input id="register-submit-btn" type="submit" value="SIGN UP">
             </form>
             
         </div>

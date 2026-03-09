@@ -1,3 +1,4 @@
+import { disableBtn, enableBtn } from "./utils/buttons.js"
 import * as v from "https://cdn.skypack.dev/validator";
 
 // Dinamic URI for /find/:searchText
@@ -18,12 +19,12 @@ if (searchBar) {
 };
 
 // Handles Log in pop-up
-const logInBtn = document.getElementById("log-in-btn");
-if (logInBtn) {
+const openLogInBtn = document.getElementById("open-log-in-btn");
+if (openLogInBtn) {
 
     const popUp = document.querySelector("#log-in-pop-up");
     
-    logInBtn.addEventListener("click", (event) => {
+    openLogInBtn.addEventListener("click", (event) => {
 
         event.preventDefault();
 
@@ -45,12 +46,12 @@ if (logInBtn) {
 };
 
 // Handles Register pop-up
-const registerBtn = document.getElementById("register-btn");
-if (registerBtn) {
+const openRegisterBtn = document.getElementById("open-register-btn");
+if (openRegisterBtn) {
 
     const popUp = document.querySelector("#register-pop-up");
     
-    registerBtn.addEventListener("click", (event) => {
+    openRegisterBtn.addEventListener("click", (event) => {
 
         event.preventDefault();
 
@@ -75,9 +76,12 @@ if (registerBtn) {
 const registerForm = document.getElementById("register-form");
 if (registerForm) {
 
+    const registerSubmitBtn = document.getElementById("register-submit-btn");
     const registerError = document.getElementById("register-error");
 
     registerForm.addEventListener("submit", async (event) => {
+
+        disableBtn(registerSubmitBtn);
 
         event.preventDefault();
 
@@ -106,6 +110,7 @@ if (registerForm) {
 
         if (registerError.textContent !== "") {
             registerError.classList.remove("hidden");
+            enableBtn(registerSubmitBtn);
             return;
         };
 
@@ -126,6 +131,7 @@ if (registerForm) {
             if (!response.ok) {
                 registerError.textContent = data.error;
                 registerError.classList.remove("hidden");
+                enableBtn(registerSubmitBtn);
                 return;
             };
 
@@ -135,6 +141,8 @@ if (registerForm) {
             console.error(err);
             registerError.textContent = "Internal server error."
             registerError.classList.remove("hidden");
+            enableBtn(registerSubmitBtn);
+            return;
         };
 
     });
@@ -144,9 +152,12 @@ if (registerForm) {
 const logInForm = document.getElementById("log-in-form");
 if (logInForm) {
 
+    const logInSubmitBtn = document.getElementById("log-in-submit-btn");
     const logInError = document.getElementById("log-in-error");
 
     logInForm.addEventListener("submit", async (event) => {
+
+        disableBtn(logInSubmitBtn);
     
         event.preventDefault();
     
@@ -169,10 +180,12 @@ if (logInForm) {
                 const data = await response.json();
                 logInError.textContent = data.error;
                 logInError.classList.remove("hidden");
+                enableBtn(logInSubmitBtn);
                 return;
             }
 
             if (window.location.pathname === "/verify" || window.location.pathname === "/message") {
+                enableBtn(logInSubmitBtn);
                 window.location.href = "/";
                 return;
             };
@@ -183,6 +196,8 @@ if (logInForm) {
             console.error(err);
             logInError.textContent = "Internal server error.";
             logInError.classList.remove("hidden");
+            enableBtn(logInSubmitBtn);
+            return;
         };
     
     });
@@ -191,6 +206,7 @@ if (logInForm) {
 // Log out with fetch
 const logOutForm = document.getElementById("log-out-form");
 if (logOutForm) {
+    
     logOutForm.addEventListener("submit", async (event) => {
 
         event.preventDefault();
