@@ -6,6 +6,7 @@ export function authenticateUser(req, res, next) {
 
     if (!authToken) {
         res.locals.user = null;
+        req.user = null;
         return next();
     }
 
@@ -17,6 +18,11 @@ export function authenticateUser(req, res, next) {
         );
 
         res.locals.user = {
+            id: decoded.id,
+            username: decoded.username,
+        };
+
+        req.user = {
             id: decoded.id,
             username: decoded.username,
         };
