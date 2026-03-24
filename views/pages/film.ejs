@@ -16,6 +16,25 @@
 
     <%- include("../partials/header.ejs") %>
 
+    <div id="data"
+        data-user-id="<%= user?.id %>"
+        data-film-id="<%= filmData.id %>"
+        data-is-film-watched="<%= watchedData.isFilmWatched %>"
+        data-is-film-in-watchlist="<%= isFilmInWatchlist %>"
+        data-film-rate="<%= watchedData.rate ? watchedData.rate : 0 %>"
+        data-is-film-reviewed="<%= watchedData.review ? true : false %>"
+    ></div>
+
+    <div id="delete-review-pop-up" class="pop-up-centralizer hidden">
+        <div class="pop-up">
+            <p class="title" style="text-align: center;">ARE YOU SURE YOU WANT<br>TO DELETE YOUR LOG?</p>
+            <div style="display: flex; flex-flow: row wrap; justify-content: center; gap: 1rem;">
+                <button id="delete-review-btn" type="submit" class="careful-btn">YES</button>
+                <button id="keep-review-btn" type="submit">NO</button>
+            </div>
+        </div>
+    </div>
+
     <div id="bg-container">
         <div id="bg-img" style="--bg: url('https://image.tmdb.org/t/p/w1280<%= filmData.backdrop_path %>')"></div>
     </div>
@@ -30,23 +49,192 @@
 
             <div id="film-header">
                 <h1><%= filmData.title %></h1>
-                <p><%= filmData.release_date.slice(0, 4) %></p>
+                <p class="light-color"><%= filmData.release_date.slice(0, 4) %></p>
+                <% if (filmData.production_countries.length !== 0) { %>
+                    <p><%- filmData.production_countries.map(country => `<span class="light-color">${country.iso_3166_1}</span>`).join(", ") %></p>
+                <% } %>
                 <% const directors = filmData.credits?.crew?.filter(member => member.job === "Director").map(d => d.name) %>
-                <% if (directors) { %>
-                    <p>Directed by <%= directors.join(", ") %></p>
+                <% if (directors.length !== 0) { %>
+                    <p>Directed by <%- directors.map(d => `<span class="light-color">${d}</span>`).join(", ") %></p>
                 <% } %>
             </div>
 
             <div id="film-main">
                 
                 <div id="film-column">
+
                     <p><%= filmData.overview %></p>
+
+                    <div id="film-tags-wrapper">
+                        <% if (filmData.genres.length !== 0) { %>
+                            <div>
+                                <div class="film-tag-topic">
+                                    <h2><%= filmData.genres.length === 1 ? "GENRE" : "GENRES" %></h2>
+                                    <hr>
+                                </div>
+                                <div class="film-tag-container">
+                                    <% filmData.genres.forEach(g => { %>
+                                        <p class="film-tag"><%= g.name %></p>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
+                        
+                        <% if (filmData.spoken_languages.length !== 0) { %>
+                            <div>
+                                <div class="film-tag-topic">
+                                    <h2><%= filmData.spoken_languages.length === 1 ? "SPOKEN LANGUAGE" : "SPOKEN LANGUAGES" %></h2>
+                                    <hr>
+                                </div>
+                                <div class="film-tag-container">
+                                    <% filmData.spoken_languages.forEach(sl => { %>
+                                        <p class="film-tag"><%= sl.english_name %></p>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <% if (filmData.production_companies.length !== 0) { %>
+                            <div>
+                                <div class="film-tag-topic">
+                                    <h2><%= filmData.production_companies.length === 1 ? "PRODUCTION COMPANY" : "PRODUCTION COMPANIES" %></h2>
+                                    <hr>
+                                </div>
+                                <div class="film-tag-container">
+                                    <% filmData.production_companies.forEach(pc => { %>
+                                        <p class="film-tag"><%= pc.name %></p>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div id="popular-reviews-wrapper">
+
+                        <p>POPULAR REVIEWS</p>
+                        <hr>
+
+                        <% if (popularReviews.rows.length > 0) { %>
+                            <% popularReviews.rows.forEach(r => { %>
+                                <div class="popular-review-div">
+
+                                    <div style="display: flex; flex-flow: row nowrap; align-items: center; gap: 0.5rem;">
+                                        <p class="author">Review by <span><%= r.username %></span></p>
+                                        <p class="rate" style="background-color: var(--rate-<%= r.rate %>-color);">
+                                            <%= r.rate %>
+                                        </p>
+                                    </div>
+
+                                    <% if (r.contains_spoilers) { %>
+                                        <p class="review spoilers-warning" id="spoilers-warning-<%= r.id %>" style="font-weight: 200;"><em>This review may contain spoilers.
+                                            <span class="seeSpoilers">I can handle the truth.</span></em>
+                                        </p>
+                                        <p class="review hidden" id="spoilers-review-<%= r.id %>"><%= r.review %></p>
+                                    <% } else { %>
+                                        <p class="review"><%= r.review %></p>
+                                    <% } %>
+
+                                    <div style="display: flex; flex-flow: row wrap; align-items: center;">
+                                        <form class="like-review-form">
+                                            <button type="submit" class="like-review-btn" style="display: flex; flex-flow: row wrap; align-items: center;">
+                                                <input type="hidden" name="reviewId" value="<%= r.id %>">
+                                                <input type="hidden" name="isLiked" value="<%= r.is_liked %>">
+                                                <input type="hidden" name="userId" value="<%= r.user_id %>">
+                                                <img class="heart"
+                                                    src="<%= r.is_liked ? '/images/liked.png' : '/images/not-liked.png' %>"
+                                                    alt="<%= r.is_liked ? 'Remove like from review' : 'Like review' %>">
+                                                <p><span class="like-count-number"><%= r.like_count %></span> Likes</p>
+                                            </button>
+                                        </form>
+                                        <p class="watched-on">Watched on <span><%= new Date(r.watched_on).toLocaleDateString() %></span></p>
+                                    </div>
+
+                                </div>
+                                <hr>
+                            <% }) %>
+                        <% } else { %>
+                            <p class="review">There are no reviews for this film.</p>
+                        <% } %>
+
+                    </div>
+
                 </div>
 
                 <div id="film-ratings">
-                    <p><%= filmData.vote_count %> Ratings</p>
+
+                    <div style="display: flex; flex-flow: row nowrap; justify-content: space-evenly;">
+                        <% if (user) { %>
+
+                            <form id="watch-form" class="film-user-log">
+                                <button id="watch-btn" type="submit" style="all: unset;">
+                                    <img id="watch-img"
+                                        src="<%= watchedData.isFilmWatched ? '/images/watched.png' : '/images/not-watched.png' %>"
+                                        alt="<%= watchedData.isFilmWatched ? 'Remove film from watched' : 'Mark film as watched' %>">
+                                    <p id="watch-text">
+                                        <%= watchedData.isFilmWatched ? "Watched" : "Watch" %>
+                                    </p>
+                                </button>
+                            </form>
+    
+                            <form id="watchlist-form" class="film-user-log">
+                                <button id="watchlist-btn" type="submit" style="all: unset;">
+                                    <img id="watchlist-img"
+                                        src="<%= isFilmInWatchlist ? '/images/in-watchlist.png' : '/images/not-in-watchlist.png' %>"
+                                        alt="<%= isFilmInWatchlist ? 'Remove film from watchlist' : 'Add film to watchlist' %>">
+                                    <p id="watchlist-text">
+                                        <%= isFilmInWatchlist ? "On Watchlist" : "Watchlist" %>
+                                    </p>
+                                </button>
+                            </form>
+                            
+                        <% } else { %>
+
+                            <p>
+                                <button id="log-in-to-review-btn" type="button">Log in to rate and review</button>
+                            </p>
+
+                        <% } %>
+                    </div>
+
+                    <hr id="rate-hr" class="<%= watchedData.isFilmWatched ? '' : 'hidden' %>">
+                    <form id="rate-form" class="<%= watchedData.isFilmWatched ? '' : 'hidden' %>">
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-1-color);" name="rate" value="1">1</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-2-color);" name="rate" value="2">2</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-3-color);" name="rate" value="3">3</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-4-color);" name="rate" value="4">4</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-5-color);" name="rate" value="5">5</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-6-color);" name="rate" value="6">6</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-7-color);" name="rate" value="7">7</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-8-color);" name="rate" value="8">8</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-9-color);" name="rate" value="9">9</button>
+                        <button type="submit" class="rate-btn" style="background-color: var(--rate-10-color);" name="rate" value="10">10</button>
+                    </form>
+
+                    <hr id="review-hr" class="<%= watchedData.isFilmWatched ? '' : 'hidden' %>">
+                    <div id="review-div" class="<%= watchedData.isFilmWatched ? '' : 'hidden' %>">
+                        <form id="review-form">
+                            <textarea id="review-text" name="review" maxlength="200"
+                                    placeholder="<%= watchedData.review ? '' : 'Write your review' %>"
+                                    required><%= watchedData.review ? watchedData.review : '' %></textarea>
+                            <div style="display: flex; flex-flow: row nowrap; align-items: center;">
+                                <div id="spoilers-wrapper">
+                                    <input type="checkbox" name="spoilersCheckbox" id="spoilers-checkbox" <%= watchedData.containsSpoilers === true ? 'checked' : '' %>>
+                                    <label for="spoilersCheckbox" id="spoilers-label">Contains spoilers</label>
+                                </div>
+                                <p id="review-limiter"><span id="review-char-count"><%= watchedData.review ? watchedData.review.length : 0 %></span>/200</p>
+                            </div>
+                            <button id="review-btn" type="submit"></button>
+                        </form>
+                    </div>
+
                     <hr>
-                    <p><%= filmData.vote_count != 0 ? filmData.vote_average.toFixed(1) : "No votes" %></p>
+
+                    <div>
+                        <p><%= filmData.vote_count %> Ratings</p>
+                        <hr>
+                        <p><%= filmData.vote_count != 0 ? filmData.vote_average.toFixed(1) : "No votes" %></p>
+                    </div>
+
                 </div>
 
             </div>
@@ -69,5 +257,6 @@
         <% }); %>
     </div>
 
+<script src="/js/film.js"></script>
 </body>
 </html>

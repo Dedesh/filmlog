@@ -1,5 +1,5 @@
 import "./config/env.js";
-import { db } from "./config/db.js";
+import { db } from "./db/connection.js";
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -10,6 +10,7 @@ import { registerLimiter } from "./middlewares/rate-limiters.js";
 import { sendVerificationEmail } from "./services/email-service.js";
 import jwt from "jsonwebtoken";
 import { authenticateUser } from "./middlewares/auth.js";
+import * as queries from "./db/queries.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,63 +30,6 @@ const ACCESS_TOKEN = process.env.TMDB_TOKEN;
 app.get("/", (req, res) => {
 
     res.render("pages/home");
-
-});
-
-app.get("/find/:searchText", async (req, res) => {
-
-    const searchText = req.params.searchText;
-
-    let search;
-
-    try {
-        const result = await axios.get(
-            `${TMDB_BASE_URL}/search/movie`, {
-                params: {
-                    query: searchText,
-                },
-                headers: {
-                    Authorization: `Bearer ${ACCESS_TOKEN}`,
-                },
-            }
-        );
-
-        search = result.data.results;
-
-    } catch (error) {
-        console.error(error.response?.data || error.message);
-    };
-
-    return res.render("pages/find", {
-        searchText,
-        search,
-    });
-
-});
-
-app.get("/film/:id", async (req, res) => {
-
-    const filmId = req.params.id;
-    let filmData;
-
-    try {
-        const result = await axios.get(
-            `${TMDB_BASE_URL}/movie/${filmId}?append_to_response=credits`, {
-                headers: {
-                    Authorization: `Bearer ${ACCESS_TOKEN}`,
-                },
-            }
-        );
-
-        filmData = result.data;
-
-    } catch (error) {
-        console.error(error.response?.data || error.message);
-    };
-
-    return res.render("pages/film", {
-        filmData,
-    });
 
 });
 
@@ -167,7 +111,7 @@ app.get("/verify", async (req, res) => {
         };
 
         return res.render("pages/message", {
-            message: "Your account has been verified."
+            message: "Your account has been successfully verified."
         });
 
     } catch (err) {
@@ -248,6 +192,204 @@ app.get("/message", (req, res) => {
         message
     });
     
+});
+
+app.get("/find/:searchText", async (req, res) => {
+
+    const searchText = req.params.searchText;
+
+    let search;
+
+    try {
+        const result = await axios.get(
+            `${TMDB_BASE_URL}/search/movie`, {
+                params: {
+                    query: searchText,
+                },
+                headers: {
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                },
+            }
+        );
+
+        search = result.data.results;
+
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+    };
+
+    return res.render("pages/find", {
+        searchText,
+        search,
+    });
+
+});
+
+app.get("/film/:id", async (req, res) => {
+
+    const filmId = req.params.id;
+
+    try {
+        const result = await axios.get(
+            `${TMDB_BASE_URL}/movie/${filmId}?append_to_response=credits`, {
+                headers: {
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                },
+            }
+        );
+
+        const filmData = result.data;
+
+        await queries.addFilmToDatabase(filmData);
+        
+        const watchedData = req.user ? await queries.checkWatched(req.user.id, filmId) : { isFilmWatched: false };
+        const isFilmInWatchlist = req.user ? await queries.checkWatchlist(req.user.id, filmId) : false;
+
+        const popularReviews = await queries.getPopularReviews(req.user.id, filmId, 10, 1);
+
+        return res.render("pages/film", {
+            filmData,
+            watchedData,
+            isFilmInWatchlist,
+            popularReviews,
+        });
+        
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+    };
+
+});
+
+app.post("/film/:id/watched", async (req, res) => {
+
+    const filmId = req.body.filmId;
+    const action = req.body.action;
+
+    try {
+        if (action === "add") {
+            await queries.addWatched(req.user.id, filmId);
+        }
+    
+        if (action === "remove") {
+            await queries.removeWatched(req.user.id, filmId);
+        }
+    
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error." });
+    };
+    
+});
+
+app.post("/film/:id/watchlist", async (req, res) => {
+
+    const filmId = req.body.filmId;
+    const action = req.body.action;
+
+    try {
+        if (action === "add") {
+            await queries.addWatchlist(req.user.id, filmId);
+        };
+    
+        if (action === "remove") {
+            await queries.removeWatchlist(req.user.id, filmId);
+        };
+    
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error." });
+    };
+    
+});
+
+app.post("/film/:id/rate", async (req, res) => {
+
+    const filmId = req.body.filmId;
+    const action = req.body.action;
+    const rate = req.body.rate;
+
+    try {
+        if (action === "add") {
+            await queries.updateRate(req.user.id, filmId, rate);
+        };
+
+        if (action === "remove") {
+            await queries.removeRate(req.user.id, filmId);
+        };
+        
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error." });
+    };
+
+});
+
+app.post("/film/:id/review", async (req, res) => {
+
+    const filmId = req.body.filmId;
+    const review = req.body.review;
+    const containsSpoilers = req.body.containsSpoilers;
+
+    try {
+        await queries.updateReview(req.user.id, filmId, review, containsSpoilers);
+        
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error." });
+    };
+
+});
+
+app.post("/film/:id/like-review", async (req, res) => {
+
+    const reviewId = req.body.reviewId;
+    const action = req.body.action;
+
+    try {
+        const likeCount = action === "add"
+                        ? await queries.addReviewLike(req.user.id, reviewId)
+                        : await queries.removeReviewLike(req.user.id, reviewId);
+        
+        return res.status(200).json({ likeCount });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error." });
+    };
+
+});
+
+app.get("/users/:id/watchlist", async (req, res) => {
+
+    const userId = req.params.id;
+    const username = await queries.getUsername(userId);
+
+    if (!username) {
+        return res.render("pages/message.ejs", {
+            message: "This user could not be found."
+        });
+    };
+
+    const watchlist = await queries.getWatchlist(userId);
+
+    return res.render("pages/watchlist.ejs", {
+        userId, username, watchlist
+    });
+
+});
+
+app.get("/users/:id/watched", async (req, res) => {
+
+    res.status(200)
+
 });
 
 app.listen(PORT, () => {
