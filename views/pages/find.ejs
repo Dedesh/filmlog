@@ -12,59 +12,63 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body id="find-film-body">
+<body>
 
     <div id="header-background"></div>
     <%- include("../partials/header.ejs") %>
 
-    <div id="find-film-content">
+    <div style="display: flex; justify-content: center;">
 
-        <p id="search-text">Showing results for "<%= searchText %>"</p>
-
-        <hr>
-
-        <% if (locals.search.length > 0) { %>
-
-            <% search.forEach(f => { %>
-                <% if (f.poster_path && f.backdrop_path && f.release_date) { %>
-
-                    <div class="find-film-card">
-
-                        <a href="/film/<%= f.id %>" class="find-film-poster">
-                            <img
-                                src="https://image.tmdb.org/t/p/w500<%= f.poster_path %>" 
-                                alt="Poster of <%= f.title %>">
-                        </a>
-
-                        <div class="find-film-info">
-                            <p><a href="/film/<%= f.id %>" class="find-film-title"><%= f.title %></a></p>
-
-                            <p class="find-film-year"><%= f.release_date.slice(0, 4) %></p>
-
-                            <% const numOfCharacters = 200 %>
-                            <% if (f.overview.length < numOfCharacters) { %>
-                                <p><%= f.overview %></p>
-                            <% } else { %>
-                                <p id="half-text-<%= f.id %>">
-                                    <%= f.overview.slice(0, numOfCharacters).slice(0, f.overview.slice(0, numOfCharacters).lastIndexOf(" ")) %> 
-                                    <span id="more-text-<%= f.id %>" class="more-text">...more</span>
-                                </p>
-                                <p id="full-text-<%= f.id %>" class="hidden"><%= f.overview %></p>
-                            <% }; %>
+        <div id="find-film-content">
+    
+            <p id="search-text">Showing results for "<%= searchText %>"</p>
+    
+            <hr>
+    
+            <% if (locals.search.length > 0) { %>
+    
+                <% search.forEach(f => { %>
+                    <% if (f.poster_path && f.backdrop_path && f.release_date) { %>
+    
+                        <div class="find-film-card">
+    
+                            <a href="/film/<%= f.id %>" class="find-film-poster">
+                                <img
+                                    src="https://image.tmdb.org/t/p/w500<%= f.poster_path %>" 
+                                    alt="Poster of <%= f.title %>">
+                            </a>
+    
+                            <div class="find-film-info">
+                                <p><a href="/film/<%= f.id %>" class="find-film-title"><%= f.title %></a></p>
+    
+                                <p class="find-film-year"><%= f.release_date.slice(0, 4) %></p>
+    
+                                <% const numOfCharacters = 200 %>
+                                <% if (f.overview.length < numOfCharacters) { %>
+                                    <p><%= f.overview %></p>
+                                <% } else { %>
+                                    <p id="half-text-<%= f.id %>">
+                                        <%= f.overview.slice(0, numOfCharacters).slice(0, f.overview.slice(0, numOfCharacters).lastIndexOf(" ")) %> 
+                                        <span id="more-text-<%= f.id %>" class="more-text">...more</span>
+                                    </p>
+                                    <p id="full-text-<%= f.id %>" class="hidden"><%= f.overview %></p>
+                                <% }; %>
+                            </div>
+    
                         </div>
+    
+                        <hr>
+    
+                    <% } %>
+                <% }); %>
+    
+            <% } else { %>
+                <p>There were no matches for your search.</p>
+            <% } %>
+        </div>
 
-                    </div>
-
-                    <hr>
-
-                <% } %>
-            <% }); %>
-
-        <% } else { %>
-            <p>There were no matches for your search.</p>
-        <% } %>
     </div>
 
-    <script src="/js/main.js"></script>
+<script src="/js/find.js"></script>
 </body>
 </html>
