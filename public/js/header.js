@@ -21,28 +21,18 @@ if (searchBar) {
 // Handles Log in pop-up
 const openLogInBtn = document.getElementById("open-log-in-btn");
 if (openLogInBtn) {
-
-    const popUp = document.querySelector("#log-in-pop-up");
     
-    openLogInBtn.addEventListener("click", (event) => {
+    const popUp = document.querySelector("#log-in-pop-up");
 
-        event.preventDefault();
-
+    function toggleLogInPopUp() {
         popUp.classList.toggle("hidden");
+        popUp.querySelector("input[name='email']").focus();
+    }
 
-        const emailInput = popUp.querySelector("input[name='email']");
-        emailInput.focus();
-        
-    });
+    document
+        .querySelectorAll("#open-log-in-btn, #close-log-in-btn, #log-in-to-review-btn")
+        .forEach(btn => btn?.addEventListener("click", toggleLogInPopUp));
 
-    const closeBtn = document.getElementById("log-in-close-btn");
-    closeBtn.addEventListener("click", (event) => {
-
-        event.preventDefault();
-        
-        popUp.classList.toggle("hidden");
-
-    });
 };
 
 // Handles Register pop-up
@@ -51,25 +41,14 @@ if (openRegisterBtn) {
 
     const popUp = document.querySelector("#register-pop-up");
     
-    openRegisterBtn.addEventListener("click", (event) => {
-
-        event.preventDefault();
-
+    function toggleRegisterPopUp() {
         popUp.classList.toggle("hidden");
+        popUp.querySelector("input[name='email']").focus();
+    }
 
-        const emailInput = popUp.querySelector("input[name='email']");
-        emailInput.focus();
-
-    });
-
-    const closeBtn = document.getElementById("register-close-btn");
-    closeBtn.addEventListener("click", (event) => {
-
-        event.preventDefault();
-
-        popUp.classList.toggle("hidden");
-
-    });
+    document
+        .querySelectorAll("#open-register-btn, #close-register-btn")
+        .forEach(btn => btn?.addEventListener("click", toggleRegisterPopUp));
 };
 
 // Register with fetch
@@ -185,11 +164,10 @@ if (logInForm) {
             }
 
             if (window.location.pathname === "/verify" || window.location.pathname === "/message") {
-                enableBtn(logInSubmitBtn);
                 window.location.href = "/";
                 return;
             };
-            
+
             window.location.reload();
     
         } catch (err) {

@@ -27,17 +27,21 @@
 
                 </div>
 
-                <a href="">
-                    FILMS
-                </a>
+                <button type="submit">
+                    WATCHED
+                </button>
 
-                <a href="">
+                <form action="/users/<%= user.id %>/watchlist" method="GET">
+                    <button type="submit">WATCHLIST</button>
+                </form>
+
+                <!-- <button>
                     ACTORS
-                </a>
+                </button>
 
-                <a href="">
+                <button>
                     FRIENDS
-                </a>
+                </button> -->
 
             <% } %>
         </div>
@@ -68,7 +72,7 @@
             
             <div class="title-and-close-btn">
                 <p class="title">LOG IN TO FILMLOG</p>
-                <img id="log-in-close-btn" class="close-btn" src="/images/close.png" alt="Close button">
+                <img id="close-log-in-btn" class="close-btn" src="/images/close.png" alt="Close button">
             </div>
 
             <form id="log-in-form">
@@ -92,7 +96,7 @@
             
             <div class="title-and-close-btn">
                 <p class="title">JOIN FILMLOG</p>
-                <img id="register-close-btn" class="close-btn" src="/images/close.png" alt="Close button">
+                <img id="close-register-btn" class="close-btn" src="/images/close.png" alt="Close button">
             </div>
 
             <form id="register-form">
