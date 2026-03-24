@@ -1,4 +1,4 @@
-// Handles "read more" btns in /find
+// Handles "read more" btns
 const moreTextButtons = document.querySelectorAll('[id^="more-text-"]');
 
 moreTextButtons.forEach((btn) => {
