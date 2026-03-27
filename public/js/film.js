@@ -387,7 +387,7 @@ if (likeReviewForms.length > 0) {
         const btn = f.querySelector(".like-review-btn");
 
         // Disables interaction if the review belongs to the current user
-        if (userId !== f.authorId.value) {
+        if (userId === f.authorId.value) {
             btn.style.pointerEvents = "none";
             return;
         };

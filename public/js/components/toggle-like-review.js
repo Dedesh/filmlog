@@ -12,7 +12,7 @@ export function toggleLikeReview(userId, filmId) {
             const heart = f.querySelector(".heart");
 
             // User cannot click to like its own review
-            if (userId !== heart.dataset.authorId) return;
+            if (userId === heart.dataset.authorId) return;
             ////
 
             e.submitter.disabled = true;

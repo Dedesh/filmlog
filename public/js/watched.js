@@ -35,7 +35,7 @@ if (reviewBtns.length > 0) {
     const likeBtnElements = likeBtn.querySelectorAll("*");
 
     function mouseEnter() {
-        if (userId !== authorId) return;
+        if (userId === authorId) return;
         likeBtn.style.cursor = "pointer";
         likeBtnElements.forEach(e => {
             e.style.color = "white";
@@ -107,7 +107,7 @@ if (reviewBtns.length > 0) {
         e.preventDefault();
 
         // User cannot click to like its own review
-        if (userId !== authorId) return;
+        if (userId === authorId) return;
         ////
 
         e.submitter.disabled = true;
