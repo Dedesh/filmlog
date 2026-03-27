@@ -57,6 +57,7 @@ if (reviewBtns.length > 0) {
         btn.addEventListener("click", () => {
 
             reviewId = btn.dataset.reviewId;
+
             isLiked = btn.dataset.isLiked === "true";
             filmId = btn.dataset.filmId;
             authorId = btn.dataset.authorId;
@@ -93,10 +94,6 @@ if (reviewBtns.length > 0) {
                 heartImg.alt = "Like review"
             };
             ////
-
-            heartImg.dataset.reviewId = reviewId;
-            heartImg.dataset.isLiked = isLiked;
-            heartImg.dataset.authorId = authorId;
     
             popUp.classList.remove("hidden");
             
@@ -104,7 +101,7 @@ if (reviewBtns.length > 0) {
     });
 
     // Like submit
-    const likeReviewForm = document.querySelectorAll(".like-review-form");
+    const likeReviewForm = document.getElementById("like-review-form");
     likeReviewForm.addEventListener("submit", async (e) => {
 
         e.preventDefault();
@@ -152,6 +149,15 @@ if (reviewBtns.length > 0) {
             console.error(error);
 
         } finally {
+            // Updates likeCount and isLiked information whithout needing to reload the page
+            reviewBtns.forEach(btn => {
+                if (btn.dataset.reviewId === reviewId) {
+                    btn.dataset.isLiked = isLiked;
+                    btn.dataset.likeCount = data.likeCount;
+                };
+            });
+            ////
+            
             likeCount.textContent = data.likeCount;
             e.submitter.disabled = false;
 
