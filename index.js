@@ -388,7 +388,24 @@ app.get("/users/:id/watchlist", async (req, res) => {
 
 app.get("/users/:id/watched", async (req, res) => {
 
-    res.status(200)
+    const authorId = req.params.id;
+    const username = await queries.getUsername(authorId);
+
+    if (!username) {
+        return res.render("pages/message.ejs", {
+            message: "This user could not be found."
+        });
+    };
+
+    const orderBy = req.query.orderBy
+                    ? req.query.orderBy
+                    : "watched_on DESC";
+
+    const watched = await queries.getWatched(authorId, orderBy);
+
+    return res.render("pages/watched.ejs", {
+        authorId, username, watched, orderBy
+    });
 
 });
 

@@ -168,7 +168,7 @@ body {
     border-radius: 1rem;
     padding: 0.25rem;
     font-weight: 500;
-    transition: all ease 0.3s;
+    transition: all 0.1s ease;
 }
 #search-bar:hover,
 #search-bar:focus-within {
@@ -539,7 +539,7 @@ body {
     font-weight: 500;
     padding: 0.3rem 0;
     width: 1.5rem;
-    border-radius: 0.1rem;
+    border-radius: 0.15rem;
     text-align: center;
 }
 
@@ -733,37 +733,149 @@ body {
     cursor: pointer;
 }
 
-#watchlist-placement {
+#watchlist-placement,
+#watched-placement {
     display: flex;
     justify-content: center;
     padding: 8.5rem 0;
 }
 
-#watchlist-wrapper {
+#watchlist-wrapper,
+#watched-wrapper {
     width: calc(0.7 * var(--bg-width));
 }
 
-#watchlist-grid {
+#watchlist-grid,
+#watched-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 1rem;
 }
 
-.watchlist-poster {
+.watchlist-poster,
+.watched-poster {
     width: 100%;
     border: 1px solid var(--detail-color);
     border-radius: 0.3rem;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
     transition: all 0.1s ease;
 }
-.watchlist-poster:hover {
-    transform: scale(1.05);
+.watchlist-poster:hover,
+.watched-poster:hover {
+    transform: scale(1.03);
     border: 1px solid var(--focus-color);
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);
+}
+
+#watched-wrapper label {
+    color: var(--extra-light-detail-color);
+}
+
+#watched-wrapper select {
+    background-color: var(--bg-color);
+    cursor: pointer;
+    text-transform: uppercase;
+    color: var(--extra-light-detail-color);
+    border: none;
+}
+#watched-wrapper select:hover {
+    color: white;
+}
+
+#watched-wrapper option:hover {
+    background-color: var(--focus-color);
+}
+
+.rate-ordering-by-rate,
+.review-rate {
+    border-radius: 0.2rem;
+    padding: 0.5rem;
+    color: var(--bg-color);
+    font-weight: 500;
+    text-align: center;
+    width: 1rem;
+}
+
+.log-review {
+    height: 1.6rem;
+    width: 1.6rem;
+    padding: 0.35rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.05s ease;
+}
+.log-review:hover {
+    filter: brightness(1.5);
+    transform: scale(1.1);
+}
+
+.log-rate {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    color: var(--bg-color);
+    font-weight: 500;
+    text-align: center;
+    width: 1rem;
+    border-radius: 0 0 0.2rem 0.2rem;
+    background: linear-gradient(to top, transparent 90%, rgba(0, 0, 0, 0.5));
+}
+
+#review-pop-up .author * {
+    color: var(--extra-light-detail-color);
+}
+
+#review-pop-up .film {
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    width: fit-content;
+}
+#review-pop-up .film:hover {
+    color: var(--focus-color);
+}
+
+#review-pop-up .review {
+    color: var(--ultra-light-detail-color);
+}
+
+#review-pop-up .seeSpoilers {
+    color: var(--ultra-light-detail-color);
+    cursor: pointer;
+    font-weight: 400;
+}
+#review-pop-up .seeSpoilers:hover {
+    color: var(--focus-color);
+}
+
+#review-pop-up .like-review-btn {
+    all: unset;
+}
+
+#review-pop-up #review-heart-img {
+    height: 0.8rem;
+    width: 0.8rem;
+}
+
+#review-pop-up .like-review-btn * {
+    font-size: 0.8rem;
+    color: var(--extra-light-detail-color);
+    font-weight: 500;
+}
+
+#review-pop-up .watched-on {
+    margin-left: auto;
+}
+
+#review-pop-up .watched-on,
+#review-pop-up .watched-on span {
+    font-size: 0.8rem;
+    color: rgb(178, 174, 190);
 }
 
 .hidden {
     display: none !important;
+}
+
+.placeholder {
+    visibility: hidden !important;
 }
 
 .btn-pressed {

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= username %>'s logs</title>
+    <link rel="icon" href="/images/filmlog-favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <div id="data"
+        data-user-id="<%= user.id %>"
+    ></div>
+
+    <div id="header-background"></div>
+    <%- include("../partials/header.ejs") %>
+
+    <!-- Show full review pop-up -->
+    <div id="review-pop-up" class="pop-up-centralizer hidden">
+        <div class="pop-up">
+
+            <div class="title-and-close-btn" style="text-transform: uppercase; gap: 2rem;">
+                <div>
+                    <p class="author title"><span id="review-author"></span>'s review of</p>
+                    <p class="film title" id="review-film-title"></p>
+                </div>
+                <img id="close-review-btn" class="close-btn" src="/images/close.png" alt="Close button">
+            </div>
+
+            <p class="review-rate" id="review-rate"></p>
+
+            <p class="review" id="review-review"></p>
+
+            <div style="display: flex; flex-flow: row wrap; align-items: center;">
+                <form class="like-review-form">
+                    <button type="submit" class="like-review-btn" id="like-review-btn" style="display: flex; flex-flow: row wrap; align-items: center; gap: 0.2rem;">
+                        <img class="heart" id="review-heart-img">
+                        <p><span class="like-count-number" id="review-like-count"></span> Likes</p>
+                    </button>
+                </form>
+                <p class="watched-on">Watched on <span id="review-watched-on"></span></p>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="watched-placement">
+        <div id="watched-wrapper">
+    
+            <div style="display: flex; flex-flow: row wrap; align-items: center; justify-content: space-between;">
+                
+                <p style="text-transform: uppercase;"><span style="color: var(--ultra-light-detail-color);"><%= username %></span>'s logs</p>
+
+                <form action="/users/<%= authorId %>/watched" method="GET">
+                    <label for="orderBy">Order by</label>
+                    <select name="orderBy" onchange="this.form.submit()">
+                        <option value="watched_on DESC" <%= orderBy === 'watched_on DESC' ? 'selected' : '' %>>Recent logs</option>
+                        <option value="watched_on ASC" <%= orderBy === 'watched_on ASC' ? 'selected' : '' %>>Oldest logs</option>
+                        <option value="rate DESC" <%= orderBy === 'rate DESC' ? 'selected' : '' %>>Highest ratings</option>
+                        <option value="rate ASC" <%= orderBy === 'rate ASC' ? 'selected' : '' %>>Lowest ratings</option>
+                        <option value="release_date DESC" <%= orderBy === 'release_date DESC' ? 'selected' : '' %>>Recent films</option>
+                        <option value="release_date ASC" <%= orderBy === 'release_date ASC' ? 'selected' : '' %>>Oldest films</option>
+                    </select>
+                </form>
+
+            </div>
+
+            <hr>
+        
+            <div style="margin-top: 1.25rem;">
+                <% if (watched.length > 0) { %>
+
+                    <%
+                    let orderedFilms = {};
+                    let orderedKeys = [];
+
+                    const getOrderMap = {
+                        "watched_on DESC":   f => new Date(f.watched_on).toLocaleString("en-US", { month: "short", year: "numeric" }),
+                        "watched_on ASC":    f => new Date(f.watched_on).toLocaleString("en-US", { month: "short", year: "numeric" }),
+                        "rate DESC":         f => f.rate,
+                        "rate ASC":          f => f.rate,
+                        "release_date DESC": f => new Date(f.release_date).getFullYear(),
+                        "release_date ASC":  f => new Date(f.release_date).getFullYear()
+                    };
+
+                    watched.forEach(f => {
+
+                        const group = getOrderMap[orderBy](f);
+
+                        if (!orderedFilms[group]) {
+                            orderedKeys.push(group);
+                            orderedFilms[group] = [f];
+                        } else {
+                            orderedFilms[group].push(f);
+                        };
+
+                    });
+                    %>
+
+                    <% orderedKeys.forEach(group => { %>
+                        <% const isRatedOrderingByRate = group > 0 && group < 11 %> <!-- group > 0 -> 0 has no ratings, no colors | group < 11 -> escapes ordering by year) -->
+                        <p class="<%= isRatedOrderingByRate ? 'rate-ordering-by-rate' : '' %>"
+                            style="margin-top: 1.25rem;
+                                   background-color: <%= isRatedOrderingByRate ? `var(--rate-${group}-color)` : 'transparent' %>;">
+                            <%= group ? group : 'NO RATINGS' %>
+                        </p>
+                        <div id="watched-grid">
+                            <% orderedFilms[group].forEach(f => { %>
+                                <div style="display: flex; flex-flow: column nowrap; align-items: flex-end; margin-top: 1.25rem;">
+
+                                    <a href="/film/<%= f.film_id %>">
+                                        <img class="watched-poster" style="display: block;"
+                                            src="https://image.tmdb.org/t/p/w500<%= f.poster_path %>"
+                                            alt="Poster of <%= f.title %>">
+                                    </a>
+
+                                    <div style="display: flex; flex-flow: row wrap; align-items: stretch;">
+                                        <img class="log-review <%= f.review ? '' : 'placeholder' %>"
+                                            src="/images/review.png"
+                                            alt="<%= username %>'s review of <%= f.title %>"
+                                            data-review-id="<%= f.review_id %>"
+                                            data-film-id="<%= f.film_id %>"
+                                            data-author-id="<%= authorId %>"
+                                            data-username="<%= username %>"
+                                            data-film-title="<%= f.title %>"
+                                            data-rate="<%= f.rate %>"
+                                            data-review="<%= f.review %>"
+                                            data-contains-spoilers="<%= f.contains_spoilers %>"
+                                            data-like-count="<%= f.like_count %>"
+                                            data-is-liked="<%= f.is_liked %>"
+                                            data-watched-on="<%= f.watched_on %>">
+                                        <p class="log-rate <%= orderBy.includes('rate') ? 'placeholder' : '' %>"
+                                            style="background-color: <%= f.rate ? `var(--rate-${f.rate}-color)` : 'transparent' %>;">
+                                            <%= f.rate ? f.rate : '' %>
+                                        </p>
+                                    </div>
+
+                                </div>
+                            <% }) %>
+                        </div>
+                        <hr style="margin-top: 1.25rem; filter: opacity(0.25);">
+                    <% }) %>
+                    
+                <% } else { %>
+                    <p>There are no logs yet.</p>
+                <% } %>
+            </div>
+    
+        </div>
+    </div>
+
+    <script src="/js/watched.js"></script>
+</body>
+</html>

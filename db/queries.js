@@ -217,12 +217,30 @@ export async function getUsername(userId) {
 export async function getWatchlist(userId) {
 
     const response = await db.query(
-        `SELECT film_id, listed_on, title, release_date, poster_path
+        `SELECT film_id, title, poster_path
         FROM watchlist w
         JOIN films f on f.id = w.film_id
         WHERE w.user_id = $1
         ORDER BY listed_on DESC`,
         [userId]
+    );
+
+    return response.rows;
+
+};
+
+export async function getWatched(authorId, orderBy) {
+
+    const response = await db.query(
+        `SELECT w.id AS review_id, film_id, watched_on, rate, review, contains_spoilers, like_count, title, release_date, poster_path, rl.user_id IS NOT NULL AS is_liked
+        FROM watched w
+        JOIN films f on f.id = w.film_id
+        LEFT JOIN review_likes rl
+            ON rl.review_id = w.id
+            AND rl.user_id = $1
+        WHERE w.user_id = $1
+        ORDER BY ${orderBy}`,
+        [authorId]
     );
 
     return response.rows;

@@ -21,7 +21,7 @@
         <div id="watchlist-wrapper">
     
             <div>
-                <p style="text-transform: uppercase;"><%= username %>'s watchlist</p>
+                <p style="text-transform: uppercase;"><span style="color: var(--ultra-light-detail-color);"><%= username %></span>'s watchlist</p>
             </div>
 
             <hr>
@@ -37,7 +37,7 @@
                             </a>
                         <% }) %>
                     </div>
-                    
+                    <hr style="margin-top: 1.25rem; filter: opacity(0.25);">
                 <% } else { %>
                     <p>There are no films in <%= username %>'s watchlist.</p>
                 <% } %>

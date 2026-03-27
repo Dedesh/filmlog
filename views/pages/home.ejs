@@ -15,12 +15,6 @@
 <body>
 
     <%- include("../partials/header.ejs") %>
-    
-    <% if (!locals.user) { %>
-        <h1>Try to log in</h1>
-    <% } else { %>
-        <h1>Hello <%= user.username %></h1>
-    <% } %>
 
 </body>
 </html>

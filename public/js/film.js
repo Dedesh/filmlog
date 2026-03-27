@@ -1,3 +1,12 @@
+import { toggleLikeReview } from "/js/components/toggle-like-review.js";
+
+// Reload page if going back and forth the URLs -> solves like button bug
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
 // Gets data
 const data = document.getElementById("data").dataset;
 const userId = data.userId;
@@ -378,7 +387,7 @@ if (likeReviewForms.length > 0) {
         const btn = f.querySelector(".like-review-btn");
 
         // Disables interaction if the review belongs to the current user
-        if (userId === f.userId.value) {
+        if (userId !== f.authorId.value) {
             btn.style.pointerEvents = "none";
             return;
         };
@@ -410,66 +419,6 @@ if (likeReviewForms.length > 0) {
 
     };
 
-
-    // Like a review or remove a like from review
-    likeReviewForms.forEach(f => {
-
-        f.addEventListener("submit", async (e) => {
-
-            e.preventDefault();
-
-            // User cannot click to like its own review
-            if (userId === f.userId.value) {
-                return;
-            };
-
-            e.submitter.disabled = true;
-
-            const heart = f.querySelector(".heart");
-            const likeCount = f.querySelector(".like-count-number");
-            const reviewId = f.reviewId.value;
-            const action = f.isLiked.value === "true"
-                        ? "remove"
-                        : "add";
-
-            let data;
-
-            try {
-                const response = await fetch(`/film/${filmId}/like-review`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        reviewId,
-                        action,
-                    }),
-                });
-
-                data = await response.json();
-
-                if (response.ok) {
-                    if (action === "add") {
-                        heart.src = "/images/liked.png";
-                        heart.alt = "Remove like from review";
-                        f.isLiked.value = true;
-
-                    } else if (action === "remove") {
-                        heart.src = "/images/not-liked.png";
-                        heart.alt = "Like review";
-                        f.isLiked.value = false;
-                    };
-                };
-
-            } catch (error) {
-                console.error(error);
-
-            } finally {
-                likeCount.textContent = data.likeCount;
-                e.submitter.disabled = false;
-
-            };
-        });
-    });
+    toggleLikeReview(userId, filmId);
 
 };

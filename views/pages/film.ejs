@@ -139,8 +139,11 @@
                                             <button type="submit" class="like-review-btn" style="display: flex; flex-flow: row wrap; align-items: center;">
                                                 <input type="hidden" name="reviewId" value="<%= r.id %>">
                                                 <input type="hidden" name="isLiked" value="<%= r.is_liked %>">
-                                                <input type="hidden" name="userId" value="<%= r.user_id %>">
+                                                <input type="hidden" name="authorId" value="<%= r.user_id %>">
                                                 <img class="heart"
+                                                    data-review-id="<%= r.id %>"
+                                                    data-is-liked="<%= r.is_liked %>"
+                                                    data-author-id="<%= r.user_id %>"
                                                     src="<%= r.is_liked ? '/images/liked.png' : '/images/not-liked.png' %>"
                                                     alt="<%= r.is_liked ? 'Remove like from review' : 'Like review' %>">
                                                 <p><span class="like-count-number"><%= r.like_count %></span> Likes</p>
@@ -257,6 +260,6 @@
         <% }); %>
     </div>
 
-<script src="/js/film.js"></script>
+<script src="/js/film.js" type="module"></script>
 </body>
 </html>

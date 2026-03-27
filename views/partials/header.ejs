@@ -27,9 +27,9 @@
 
                 </div>
 
-                <button type="submit">
-                    WATCHED
-                </button>
+                <form action="/users/<%= user.id %>/watched" method="GET">
+                    <button type="submit">LOGS</button>
+                </form>
 
                 <form action="/users/<%= user.id %>/watchlist" method="GET">
                     <button type="submit">WATCHLIST</button>
