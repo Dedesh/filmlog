@@ -44,6 +44,8 @@ a {
 }
 
 body {
+    display: flex;
+    flex-flow: column nowrap;
     margin: 0;
     min-height: 100vh;
     background:
@@ -868,6 +870,44 @@ body {
 #review-pop-up .watched-on span {
     font-size: 0.8rem;
     color: rgb(178, 174, 190);
+}
+
+#footer {
+    margin-top: auto;
+    width: 100%;
+    height: 10rem;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    background-color: #2c2e40;
+}
+
+#footer span {
+    color: var(--ultra-light-detail-color);
+}
+
+#footer img {
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+#footer a {
+    transition: all 0.1s ease;
+}
+#footer a:hover {
+    transform: scale(1.05);
+}
+
+#linkedin-btn:hover img {
+    content: url("/images/linkedin-on.png");
+}
+#github-btn:hover img {
+    content: url("/images/github-on.png");
+}
+#instagram-btn:hover img {
+    content: url("/images/instagram-on.png");
 }
 
 .hidden {
