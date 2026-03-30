@@ -897,7 +897,7 @@ body {
     transition: all 0.1s ease;
 }
 #footer a:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 #linkedin-btn:hover img {
